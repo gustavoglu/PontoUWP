@@ -1,0 +1,146 @@
+﻿<Page xmlns:my="using:Windows.UI.Xaml.Controls.Maps" 
+    x:Class="Ponto.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Ponto"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <Flyout x:Key="flyout_novoPonto">
+            <Flyout.Content>
+                <StackPanel Padding="5">
+                    <TextBlock  Text="Visita" FontSize="30" HorizontalAlignment="Center"/>
+                    <ComboBox Name="cb_localFlyout" MinWidth="150" Header="Local" PlaceholderText="Escolha o Local">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Id}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBox Header="Descrição" Name="tb_descFlyout"  MinWidth="150"/>
+                    <DatePicker Name="dp_dataFlyout" Header="Data"/>
+                    <TimePicker Name="tp_chegadaFlyout" Header="Chegada"/>
+                    <TimePicker Name="tp_saidaFlyout" Header="Saida"/>
+                    <CommandBar Name="cbar_novoPontoFlyout" Background="Transparent">
+                        <AppBarButton Name="bba_cancelaPontoFlyout" Content="Confirmar" Icon="Cancel" Foreground="DarkRed" Click="bba_cancelaPonto_Click"/>
+                        <AppBarButton Name="bba_confirmaPontoFlyout" Content ="Cancelar" Icon="Accept" Foreground="Green" Click="bba_confirmaPonto_Click"/>
+                    </CommandBar>
+                </StackPanel>
+            </Flyout.Content>
+        </Flyout>    
+    </Page.Resources>
+    
+    <Page.BottomAppBar>
+        <CommandBar Name="cbar_pontos" Background="DodgerBlue" Foreground="White">
+            <AppBarButton Name="bbar_add" Content="Novo Ponto" Icon="Add"  Foreground="White">
+                <AppBarButton.Flyout>
+                    <Flyout >
+                        <Flyout.Content>
+                            <StackPanel Padding="5">
+                                <TextBlock Text="Visita" FontSize="30" HorizontalAlignment="Center"/>
+                                <ComboBox Name="cb_local" MinWidth="150" Header="Local">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <DatePicker Name="dp_data" Header="Data"/>
+                                <TimePicker Name="tp_chegada" Header="Chegada"/>
+                                <TimePicker Name="tp_saida" Header="Saida"/>
+                                <CommandBar Name="cbar_novoPonto" Background="Transparent">
+                                    <AppBarButton Name="bba_cancelaPonto" Content="Confirmar" Icon="Cancel" Foreground="DarkRed" Click="bba_cancelaPonto_Click"/>
+                                    <AppBarButton Name="bba_confirmaPonto" Content ="Cancelar" Icon="Accept" Foreground="Green" Click="bba_confirmaPonto_Click"/>
+                                </CommandBar>
+                            </StackPanel>
+                        </Flyout.Content>
+                    </Flyout>
+
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            <AppBarButton  Name="bbar_Local" Icon="MapPin"  Content="Localização Atual" Click="bbar_Local_Click" Foreground="White"></AppBarButton>
+            <AppBarButton Name="bbar_update"  Icon="Refresh" Content="Atualizar Lista de Pontos" Click="bbar_update_Click" Foreground="White"/>
+        </CommandBar>
+
+    </Page.BottomAppBar>
+  
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Pivot Name="pvo_principal" Foreground="DodgerBlue">
+            <PivotItem Header="Pontos" Name="pvi_pontos">
+                <PivotItem.Content>
+                    <StackPanel>
+                        <ListView Name="listV_Pontos"  SelectionMode="Extended" FlyoutBase.AttachedFlyout="{StaticResource flyout_novoPonto}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Name="rp_buttons" VerticalAlignment="Center" HorizontalAlignment="Stretch" >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Name="sp_descricoes" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0" >
+                                            <TextBlock Text="{Binding DescLocalData}"/>
+                                            <TextBlock Text="{Binding DescChegadaSaida}"/>
+                                        </StackPanel>
+                                        <Button Name="bt_excluir" Grid.Column="1" Background="Transparent"  VerticalAlignment="Center"  HorizontalAlignment="Right"  HorizontalContentAlignment="Right"  Click="bt_excluir_Click">
+                                            <SymbolIcon Symbol="Delete"/>
+                                        </Button>
+                                        <Button Name="bt_more" Background="Transparent" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Right"  Click="bt_more_Click">
+                                            <SymbolIcon Symbol="More"/>
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </PivotItem.Content>
+            </PivotItem>
+            <PivotItem Header="Locais" Name="pvi_locais">
+                <PivotItem.Content>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <RelativePanel Padding="15">
+                        <AutoSuggestBox Name="tbs_endereco" QueryIcon="Find" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignLeftWithPanel="True" SuggestionChosen="tbs_endereco_SuggestionChosen" TextChanged="tbs_endereco_TextChanged" QuerySubmitted="tbs_endereco_QuerySubmitted" >
+                            <AutoSuggestBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text = "{Binding formatted_address}"/>
+                                </DataTemplate>
+                            </AutoSuggestBox.ItemTemplate>
+                        </AutoSuggestBox>
+                        <my:MapControl Name="Map_Locais" BorderThickness="5"  BorderBrush="DodgerBlue" RelativePanel.Below="tbs_endereco" MinHeight="150" ZoomLevel="18" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignLeftWithPanel="True"/>
+                        <TextBox Name="tb_descLocal" Header="Descrição do Local" RelativePanel.Below="Map_Locais"  RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignLeftWithPanel="True"></TextBox>
+                        <TextBox Name="tb_latitude" Margin="0,0,10,0" RelativePanel.Below="tb_descLocal" Header="Latitude" MinWidth="80"/>
+                        <TextBox Name="tb_longitude" RelativePanel.RightOf="tb_latitude" RelativePanel.Below="tb_descLocal" Header="Longitude"  Margin="0,0,10,0" MinWidth="80"/>
+                        <TextBox Name="tb_radiu" Header="Radiu"  RelativePanel.Below="tb_latitude"/>
+                        <Button Name="bt_AdicionarLocal" Click="bt_AdicionarLocal_Click" Background="Transparent"  Foreground="ForestGreen" Margin="10,25,0,0"  RelativePanel.Below="tb_longitude" RelativePanel.AlignTopWith="tb_radiu" VerticalAlignment="Center" RelativePanel.RightOf="tb_radiu" RelativePanel.AlignBottomWith="tb_radiu" RelativePanel.AlignRightWithPanel="True">
+                            <SymbolIcon Symbol="Accept"></SymbolIcon>
+                        </Button>
+                        <ListView Name="listV_Geofences" RelativePanel.Below="tb_radiu"  RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignRightWithPanel="True" Header="Locais">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel RightTapped="StackPanel_RightTapped">
+                                        <TextBlock Text="{Binding Id}"/>
+                                        <FlyoutBase.AttachedFlyout>
+                                            <MenuFlyout>
+                                                <MenuFlyout.Items>
+                                                    <MenuFlyoutItem Name="flyout_Locais_Remove" Text="Parar de Monitorar Local" Click="flyout_Locais_Remove_Click"/>
+                                                </MenuFlyout.Items>
+                                            </MenuFlyout>
+                                        </FlyoutBase.AttachedFlyout>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.Resources>
+                            </ListView.Resources>
+                        </ListView>
+                    </RelativePanel>
+                    </ScrollViewer>
+                </PivotItem.Content>
+            </PivotItem>
+        </Pivot>
+    </Grid>
+
+
+
+
+</Page>
