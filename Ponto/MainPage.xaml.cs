@@ -48,9 +48,6 @@ namespace Ponto
 
         double WidthRes;
         double HeightRes;
-
-
-
         string escolha;
 
         public MainPage()
@@ -135,7 +132,7 @@ namespace Ponto
             var listview = sender as ListView;
             var ponto = listview.SelectedItem as Domain.Ponto.Ponto;
 
-            carregaGeofenceFlyout(ponto, tb_descFlyout, cb_localFlyout, dp_dataFlyout, tp_chegadaFlyout, tp_saida);
+            carregaGeofenceFlyout(ponto, tb_descFlyout, cb_localFlyout, dp_dataFlyout, tp_chegadaFlyout, tp_saidaFlyout);
             FlyoutBase.ShowAttachedFlyout(listview);
             listview.SelectedItem = null;
         }
